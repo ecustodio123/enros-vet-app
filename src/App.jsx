@@ -30,6 +30,11 @@ import {
 import { NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import logo from './assets/img/brand/logo-main.png'
 import staffDoctor from './assets/img/staff/EnricoCustodio.png'
+import banoMascota from './assets/img/services/banoMascota.jpg'
+import grooming from './assets/img/services/grooming.jpg'
+import petShop from './assets/img/services/petShop.jpg'
+import microchip from './assets/img/services/microchip.jpg'
+import ecografia2 from './assets/img/services/ecografia2.jpg'
 import './App.css'
 
 const whatsappNumber = '51999976216'
@@ -57,30 +62,38 @@ const socialLinks = [
 
 const heroSlides = [
   {
-    title: 'Cirugías veterinarias con cuidado profesional',
-    service: 'Cirugías',
+    title: 'Cirugía general con seguridad anestésica',
+    service: 'Cirugía general',
     eyebrow: 'Procedimientos seguros',
-    text: 'Acompañamos cada caso con evaluación médica, criterio clínico y seguimiento cercano para tu mascota.',
+    text: 'Procedimientos quirúrgicos con tecnología, manejo del dolor y monitoreo para una recuperación más confortable.',
     image:
       'https://images.pexels.com/photos/4587991/pexels-photo-4587991.jpeg?auto=compress&cs=tinysrgb&w=1900',
   },
   {
-    title: 'Baño y cortes para engreídos limpios y felices',
-    service: 'Baño y cortes',
+    title: 'Peluquería y estética canina profesional',
+    service: 'Peluquería canina',
     eyebrow: 'Estética e higiene',
-    text: 'Un servicio pensado para cuidar piel, pelaje y bienestar con un trato tranquilo y paciente.',
+    text: 'Baño, corte, higiene, limpieza de oídos y corte de uñas según raza, pelaje y necesidades de cada mascota.',
     image:
       'https://images.pexels.com/photos/6816861/pexels-photo-6816861.jpeg?auto=compress&cs=tinysrgb&w=1900',
   },
   {
-    title: 'Radiografía para diagnósticos rápidos y precisos',
-    service: 'Radiografía',
+    title: 'Rayos X Digital para diagnósticos precisos',
+    service: 'Rayos X Digital',
     eyebrow: 'Diagnóstico por imagen',
-    text: 'Apoyamos la evaluación médica con imágenes que ayudan a tomar mejores decisiones a tiempo.',
+    text: 'Imágenes de alta definición en pocos segundos para orientar diagnósticos y tratamientos oportunos.',
     image:
       'https://images.pexels.com/photos/6235233/pexels-photo-6235233.jpeg?auto=compress&cs=tinysrgb&w=1900',
   },
 ]
+
+const servicesIntro =
+  'En Enros Vet somos una clínica veterinaria especializada exclusivamente en la atención de perros y gatos. Combinamos experiencia médica, tecnología de última generación y un trato cálido para brindar una atención integral en cada etapa de la vida de tu mascota.'
+
+const technologyContent = {
+  title: 'Tecnología que marca la diferencia',
+  text: 'En Enros Vet creemos que un diagnóstico preciso comienza con la mejor tecnología. Por ello contamos con ecografía veterinaria de alta resolución, radiografía digital, laboratorio clínico automatizado y anestesia inhalatoria con ventilador mecánico, herramientas que nos permiten brindar diagnósticos más rápidos, tratamientos más seguros y una atención médica de excelencia para perros y gatos.',
+}
 
 const services = [
   {
@@ -88,108 +101,106 @@ const services = [
     icon: Stethoscope,
     image:
       'https://images.pexels.com/photos/7469214/pexels-photo-7469214.jpeg?auto=compress&cs=tinysrgb&w=900',
-    text: 'Chequeo clinico para detectar riesgos tempranos y definir un plan de salud para tu mascota.',
-    bullets: [
-      'Evaluacion de peso, condicion corporal y signos vitales',
-      'Revision de piel, oido, ojos y cavidad oral',
-      'Recomendaciones de prevencion y cuidados en casa',
-    ],
+    text: 'Realizamos una evaluación médica completa para prevenir, diagnosticar y tratar las enfermedades más frecuentes, ofreciendo un plan de salud personalizado para cada paciente.',
   },
   {
-    title: 'Consulta cardiologica',
+    title: 'Consulta especializada',
     icon: HeartPulse,
     image:
-      'https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&fit=crop&w=900&q=80',
-    text: 'Evaluacion especializada para mascotas con soplos, fatiga o sospecha de enfermedad cardiaca.',
-    bullets: [
-      'Electrocardiograma para detectar arritmias',
-      'Ecocardiografia para medir funcion y tamano cardiaco',
-      'Control y monitoreo de presion arterial',
-    ],
+      'https://images.unsplash.com/photo-1612531386530-97286d97c2d2?auto=format&fit=crop&w=900&q=80',
+    text: 'Atendemos casos de mayor complejidad en áreas como cardiología, dermatología, fisioterapia y rehabilitación veterinaria, desarrollando tratamientos personalizados. Además, contamos con ozonoterapia veterinaria, una terapia complementaria que favorece la cicatrización, disminuye la inflamación, alivia el dolor y acelera la recuperación.',
   },
   {
-    title: 'Consulta traumatologica',
-    icon: Activity,
-    image:
-      'https://images.pexels.com/photos/4587991/pexels-photo-4587991.jpeg?auto=compress&cs=tinysrgb&w=900',
-    text: 'Atencion de lesiones musculo-esqueleticas, cojeras, fracturas y dolor articular.',
-    bullets: [
-      'Evaluacion locomotora y neurologica basica',
-      'Plan terapeutico segun el tipo de lesion',
-      'Seguimiento de recuperacion y movilidad',
-    ],
-  },
-  {
-    title: 'Consulta dermatologica',
-    icon: ShieldCheck,
-    image:
-      'https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&w=900&q=80',
-    text: 'Diagnostico y tratamiento de alergias, picazon, caida de pelo e infecciones de piel.',
-    bullets: [
-      'Raspado, citologia y pruebas complementarias',
-      'Control de dermatitis alergica y otitis',
-      'Plan de tratamiento y mantenimiento de piel',
-    ],
-  },
-  {
-    title: 'Consulta oftalmologica',
-    icon: Sparkles,
-    image:
-      'https://images.unsplash.com/photo-1598133894008-61f7fdb8cc3a?auto=format&fit=crop&w=900&q=80',
-    text: 'Evaluacion ocular para detectar y tratar alteraciones visuales y enfermedades del ojo.',
-    bullets: [
-      'Revision de cornea, conjuntiva y cristalino',
-      'Deteccion temprana de ulceras y cataratas',
-      'Manejo terapeutico y controles periodicos',
-    ],
-  },
-  {
-    title: 'Ecografia abdominal',
-    icon: Microscope,
-    image:
-      'https://images.pexels.com/photos/6235233/pexels-photo-6235233.jpeg?auto=compress&cs=tinysrgb&w=900',
-    text: 'Imagen diagnostica no invasiva para evaluar organos internos y apoyar decisiones clinicas.',
-    bullets: [
-      'Valoracion de higado, rinones y pancreas',
-      'Revision de vejiga, utero y ganglios',
-      'Apoyo para diagnostico y seguimiento',
-    ],
-  },
-  {
-    title: 'Bano y cortes',
-    icon: Bath,
-    image:
-      'https://images.pexels.com/photos/6816861/pexels-photo-6816861.jpeg?auto=compress&cs=tinysrgb&w=900',
-    text: 'Higiene, corte y cuidado estetico adaptado al tipo de pelaje y sensibilidad de cada mascota.',
-    bullets: [
-      'Bano con productos adecuados para piel y pelo',
-      'Corte higienico, cepillado y desenredo',
-      'Revision basica de piel durante el servicio',
-    ],
-  },
-  {
-    title: 'Vacunacion',
+    title: 'Vacunas',
     icon: Syringe,
     image:
       'https://images.pexels.com/photos/1350591/pexels-photo-1350591.jpeg?auto=compress&cs=tinysrgb&w=900',
-    text: 'Planes preventivos para cachorros, adultos y mascotas mayores segun su estilo de vida.',
+    text: 'Planes de vacunación completos para proteger a tu mascota frente a las principales enfermedades infecciosas durante todas las etapas de su vida.',
+  },
+  {
+    title: 'Tratamientos',
+    icon: ShieldCheck,
+    image:
+      'https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=900&q=80',
+    text: 'Diseñamos tratamientos médicos individualizados con seguimiento permanente para lograr una recuperación rápida, segura y efectiva.',
+  },
+  {
+    title: 'Hospitalización',
+    icon: Activity,
+    image:
+      'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=900&q=80',
+    text: 'Disponemos de cuatro áreas de hospitalización independientes, permitiendo una atención más segura y especializada. Cada paciente permanece bajo monitoreo constante y protocolos de bioseguridad que garantizan un manejo adecuado durante su recuperación.',
     bullets: [
-      'Calendario de vacunas y refuerzos',
-      'Desparasitacion y prevencion externa',
-      'Orientacion para controles periodicos',
+      'Hospitalización para pacientes caninos.',
+      'Hospitalización exclusiva para pacientes felinos.',
+      'Área para pacientes con enfermedades infecciosas.',
+      'Área de recuperación y cuidados postquirúrgicos.',
     ],
   },
   {
-    title: 'Cirugias',
+    title: 'Laboratorio clínico',
+    icon: Microscope,
+    image:
+      'https://images.pexels.com/photos/5731866/pexels-photo-5731866.jpeg?auto=compress&cs=tinysrgb&w=900',
+    text: 'Contamos con un laboratorio automatizado de última generación, capaz de realizar hemogramas, perfiles bioquímicos y diversas pruebas diagnósticas con resultados rápidos y altamente confiables, permitiendo tomar decisiones médicas oportunas.',
+  },
+  {
+    title: 'Cirugía general',
     icon: Scissors,
     image:
-      'https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=900&q=80',
-    text: 'Procedimientos quirurgicos con evaluacion previa, cuidado durante la intervencion y seguimiento.',
-    bullets: [
-      'Evaluacion prequirurgica y orientacion familiar',
-      'Manejo responsable del dolor y recuperacion',
-      'Indicaciones claras para cuidados en casa',
-    ],
+      'https://images.pexels.com/photos/4587991/pexels-photo-4587991.jpeg?auto=compress&cs=tinysrgb&w=900',
+    text: 'Realizamos procedimientos quirúrgicos con altos estándares de seguridad. Disponemos de anestesia inhalatoria con ventilador mecánico para una ventilación controlada y mayor seguridad anestésica, especialmente en pacientes de alto riesgo. Aplicamos modernas estrategias anestésicas y manejo del dolor para priorizar el bienestar y una recuperación confortable.',
+  },
+  {
+    title: 'Traumatología',
+    icon: Activity,
+    image:
+      'https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&w=900&q=80',
+    text: 'Diagnóstico y tratamiento de fracturas, lesiones articulares y enfermedades del sistema musculoesquelético, buscando recuperar la movilidad y mejorar la calidad de vida de cada paciente.',
+  },
+  {
+    title: 'Ecografía',
+    icon: Microscope,
+    image: ecografia2,
+    text: 'Realizamos estudios ecográficos con equipos de alta resolución que permiten evaluar órganos internos, gestaciones y diversas enfermedades de manera rápida, precisa y no invasiva.',
+  },
+  {
+    title: 'Rayos X Digital',
+    icon: Activity,
+    image:
+      'https://images.pexels.com/photos/6235233/pexels-photo-6235233.jpeg?auto=compress&cs=tinysrgb&w=900',
+    text: 'Nuestra radiografía digital de alta definición proporciona imágenes de excelente calidad en pocos segundos, facilitando diagnósticos precisos y un tratamiento oportuno.',
+  },
+  {
+    title: 'Implantación de Microchip',
+    icon: Sparkles,
+    image: microchip,
+    text: 'Sistema de identificación permanente y seguro que incrementa las posibilidades de recuperar a una mascota en caso de pérdida.',
+  },
+  {
+    title: 'Pet shop',
+    icon: Sparkles,
+    image: petShop,
+    text: 'Encontrarás una amplia variedad de alimentos premium, dietas terapéuticas, accesorios, juguetes y productos de las mejores marcas para el cuidado integral de tu mascota.',
+  },
+  {
+    title: 'Peluquería y estética canina',
+    icon: Bath,
+    image: grooming,
+    text: 'Servicio profesional de baño, corte, higiene, limpieza de oídos y corte de uñas, adaptado a las características de cada raza y tipo de pelaje.',
+  },
+  {
+    title: 'Baños medicados',
+    icon: ShieldCheck,
+    image: banoMascota,
+    text: 'Tratamientos dermatológicos con productos especializados para el control de alergias, dermatitis, infecciones y otras enfermedades de la piel, siempre bajo supervisión veterinaria.',
+  },
+  {
+    title: 'Farmacia veterinaria',
+    icon: HeartPulse,
+    image:
+      'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=900&q=80',
+    text: 'Disponemos de medicamentos veterinarios, suplementos nutricionales y productos especializados, ofreciendo asesoría profesional para garantizar tratamientos seguros y eficaces.',
   },
 ]
 
@@ -468,8 +479,8 @@ function FeaturedServices() {
     <section className="section-wrap">
       <SectionHeading
         eyebrow="Servicios"
-        title="Cuidado veterinario para cada etapa"
-        text="Estos son los servicios base para presentar la clínica. Luego podemos ajustar nombres, fotos y descripciones según lo que confirme el cliente."
+        title="Nuestros Servicios"
+        text={servicesIntro}
       />
       <div className="featured-grid">
         {services.slice(0, 3).map((service) => (
@@ -497,11 +508,13 @@ function ServiceCard({ service }) {
         </span>
         <h3>{service.title}</h3>
         <p>{service.text}</p>
-        <ul>
-          {service.bullets.map((bullet) => (
-            <li key={bullet}>{bullet}</li>
-          ))}
-        </ul>
+        {service.bullets ? (
+          <ul>
+            {service.bullets.map((bullet) => (
+              <li key={bullet}>{bullet}</li>
+            ))}
+          </ul>
+        ) : null}
       </div>
     </article>
   )
@@ -760,15 +773,28 @@ function CtaSection() {
   )
 }
 
+function TechnologySection() {
+  return (
+    <section className="technology-section">
+      <div>
+        <p className="eyebrow">Tecnología veterinaria</p>
+        <h2>{technologyContent.title}</h2>
+      </div>
+      <p>{technologyContent.text}</p>
+    </section>
+  )
+}
+
 function ServicesPage() {
   return (
     <>
       <PageHero
         eyebrow="Servicios"
-        title="Atención integral para perros y gatos"
-        text="Una estructura inicial con servicios comunes de una clínica veterinaria completa. Todo queda listo para editar contenido y fotos."
+        title="Nuestros Servicios"
+        text={servicesIntro}
         image="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=1800&q=82"
       />
+      <TechnologySection />
       <CtaSection />
     </>
   )
