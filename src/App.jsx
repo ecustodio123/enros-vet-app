@@ -581,8 +581,8 @@ function ProductCard({ product, quantity, onAdd }) {
             </span>
           )}
         </div>
-        <strong className={product.available ? 'availability-badge' : 'availability-badge is-muted'}>
-          {product.available ? 'Disponible' : 'Agotado'}
+        <strong className={product.available ? 'promo-badge' : 'promo-badge is-muted'}>
+          {product.available ? '20% dcto' : 'Agotado'}
         </strong>
       </div>
       <div className="product-body">
