@@ -1,16 +1,81 @@
-# React + Vite
+# Enro's Vet App
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Frontend público de Enro's Vet construido con React y Vite. La web consume productos de Kafka Core desde Supabase en modo solo lectura.
 
-Currently, two official plugins are available:
+## Variables de entorno
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Crear un archivo `.env` local basado en `.env.example`:
 
-## React Compiler
+```bash
+VITE_SUPABASE_URL=
+VITE_SUPABASE_PUBLISHABLE_KEY=
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+No usar `service_role`, contraseña de base de datos ni secretos privados en este frontend. La app solo debe utilizar la publishable key de Supabase.
 
-## Expanding the Oxlint configuration
+## Ejecutar el proyecto
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+```bash
+npm install
+npm run dev
+```
+
+Para validar producción:
+
+```bash
+npm run lint
+npm run build
+```
+
+## Tienda actual
+
+El catálogo usa temporalmente:
+
+```js
+export const CURRENT_STORE_ID = 1
+```
+
+La configuración vive en `src/config/store.js`. Más adelante puede reemplazarse por resolución por slug, dominio o configuración remota.
+
+## Lectura de productos
+
+La app reutiliza un cliente centralizado en `src/lib/supabase.js` y consulta productos desde `src/services/products.js`.
+
+La función `getPublicProducts()` lee la tabla `products` filtrando:
+
+- `store_id = 1`
+- `active = true`
+
+Los productos se ordenan por `created_at desc`. Los productos con `available = false` se muestran como “Agotado”, sin ocultarse.
+
+## Imágenes
+
+Las imágenes se leen desde Supabase Storage en el bucket público:
+
+```text
+product-images
+```
+
+El helper `src/services/productImages.js` resuelve cada `image_path` con:
+
+```js
+supabase.storage.from('product-images').getPublicUrl(imagePath)
+```
+
+El frontend solo lee imágenes. No sube, edita ni elimina archivos.
+
+## Seguridad y RLS
+
+Este proyecto actúa como usuario `anon`. Supabase debe permitir lectura pública de productos visibles, por ejemplo productos con `active = true`, y lectura pública del bucket `product-images`.
+
+Este repositorio no implementa:
+
+- login
+- roles
+- CRUD
+- dashboard
+- subida de imágenes
+- pagos
+- carrito
+- órdenes
+- backend propio

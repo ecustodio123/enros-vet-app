@@ -11,13 +11,18 @@ import {
   MapPin,
   Menu,
   Microscope,
+  Minus,
+  PackageOpen,
   Phone,
+  Plus,
   Scissors,
   ShieldCheck,
+  ShoppingBag,
   Sparkles,
   Star,
   Stethoscope,
   Syringe,
+  Trash2,
   X,
 } from 'lucide-react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -35,6 +40,7 @@ import grooming from './assets/img/services/grooming.jpg'
 import petShop from './assets/img/services/petShop.jpg'
 import microchip from './assets/img/services/microchip.jpg'
 import ecografia2 from './assets/img/services/ecografia2.jpg'
+import { getPublicProducts } from './services/products'
 import './App.css'
 
 const whatsappNumber = '51999976216'
@@ -308,22 +314,101 @@ const stats = [
   ['1', 'familia veterinaria'],
 ]
 
+const currencyFormatter = new Intl.NumberFormat('es-PE', {
+  style: 'currency',
+  currency: 'PEN',
+})
+
 function App() {
+  const [cartItems, setCartItems] = useState({})
+  const [cartOpen, setCartOpen] = useState(false)
+
+  const cartSummary = useMemo(() => {
+    const items = Object.values(cartItems)
+    const itemCount = items.reduce((total, item) => total + item.quantity, 0)
+    const subtotal = items.reduce(
+      (total, item) => total + Number(item.product.price || 0) * item.quantity,
+      0,
+    )
+
+    return { items, itemCount, subtotal }
+  }, [cartItems])
+
+  const addToCart = (product) => {
+    if (!product.available) return
+
+    setCartItems((current) => {
+      const existing = current[product.id]
+
+      return {
+        ...current,
+        [product.id]: {
+          product,
+          quantity: existing ? existing.quantity + 1 : 1,
+        },
+      }
+    })
+  }
+
+  const reduceCartItem = (productId) => {
+    setCartItems((current) => {
+      const existing = current[productId]
+      if (!existing) return current
+
+      if (existing.quantity === 1) {
+        const next = { ...current }
+        delete next[productId]
+        return next
+      }
+
+      return {
+        ...current,
+        [productId]: {
+          ...existing,
+          quantity: existing.quantity - 1,
+        },
+      }
+    })
+  }
+
+  const removeCartItem = (productId) => {
+    setCartItems((current) => {
+      const next = { ...current }
+      delete next[productId]
+      return next
+    })
+  }
+
   return (
     <div className="app-shell">
       <ScrollToTop />
-      <Header />
+      <Header cartCount={cartSummary.itemCount} onCartOpen={() => setCartOpen(true)} />
       <main>
         <PageTransition>
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route
+              path="/"
+              element={<Home cartItems={cartItems} onAddToCart={addToCart} />}
+            />
             <Route path="/servicios" element={<ServicesPage />} />
+            <Route
+              path="/tienda"
+              element={<ShopPage cartItems={cartItems} onAddToCart={addToCart} />}
+            />
             <Route path="/nosotros" element={<AboutPage />} />
             <Route path="/contacto" element={<ContactPage />} />
           </Routes>
         </PageTransition>
       </main>
       <Footer />
+      <CartSummary
+        cartSummary={cartSummary}
+        isOpen={cartOpen}
+        onClose={() => setCartOpen(false)}
+        onAdd={addToCart}
+        onReduce={reduceCartItem}
+        onRemove={removeCartItem}
+      />
       <WhatsAppButton />
     </div>
   )
@@ -339,7 +424,7 @@ function ScrollToTop() {
   return null
 }
 
-function Header() {
+function Header({ cartCount, onCartOpen }) {
   const [open, setOpen] = useState(false)
   const location = useLocation()
 
@@ -353,19 +438,32 @@ function Header() {
         <img src={logo} alt="Enro's Vet Veterinaria" />
       </NavLink>
 
-      <button
-        className="menu-button"
-        type="button"
-        aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
-        aria-expanded={open}
-        onClick={() => setOpen((value) => !value)}
-      >
-        {open ? <X size={22} /> : <Menu size={22} />}
-      </button>
+      <div className="header-actions">
+        <button
+          className="header-cart-button"
+          type="button"
+          aria-label={`Abrir carrito con ${cartCount} productos`}
+          onClick={onCartOpen}
+        >
+          <ShoppingBag size={21} />
+          {cartCount > 0 ? <span>{cartCount}</span> : null}
+        </button>
+
+        <button
+          className="menu-button"
+          type="button"
+          aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
+          aria-expanded={open}
+          onClick={() => setOpen((value) => !value)}
+        >
+          {open ? <X size={22} /> : <Menu size={22} />}
+        </button>
+      </div>
 
       <nav className={open ? 'main-nav is-open' : 'main-nav'}>
         <NavLink to="/">Inicio</NavLink>
         <NavLink to="/servicios">Servicios</NavLink>
+        <NavLink to="/tienda">Tienda</NavLink>
         <NavLink to="/nosotros">Nosotros</NavLink>
         <NavLink to="/contacto">Contacto</NavLink>
         <a className="nav-cta" href={whatsappUrl} target="_blank" rel="noreferrer">
@@ -387,16 +485,220 @@ function PageTransition({ children }) {
   )
 }
 
-function Home() {
+function Home({ cartItems, onAddToCart }) {
   return (
     <>
       <HeroCarousel />
       <FeaturedServices />
+      <ProductCatalog cartItems={cartItems} onAddToCart={onAddToCart} />
       <TrustBand />
       <FaqSection />
       <TestimonialsSection />
       <CtaSection />
     </>
+  )
+}
+
+function ProductCatalog({ cartItems = {}, onAddToCart, showAction = true }) {
+  const [products, setProducts] = useState([])
+  const [status, setStatus] = useState('loading')
+  const [errorMessage, setErrorMessage] = useState('')
+
+  useEffect(() => {
+    let ignore = false
+
+    async function loadProducts() {
+      try {
+        setStatus('loading')
+        const publicProducts = await getPublicProducts()
+
+        if (!ignore) {
+          setProducts(publicProducts)
+          setStatus('success')
+        }
+      } catch (error) {
+        if (!ignore) {
+          setErrorMessage(error.message)
+          setStatus('error')
+        }
+      }
+    }
+
+    loadProducts()
+
+    return () => {
+      ignore = true
+    }
+  }, [])
+
+  return (
+    <section className="section-wrap shop-section" id="tienda">
+      <div className="shop-heading">
+        <SectionHeading
+          eyebrow="Tienda veterinaria"
+          title="Productos para cuidar a tu engreído en casa"
+          text="Alimentos, accesorios y productos de cuidado recomendados para acompañar la salud de perros y gatos."
+        />
+        {showAction ? (
+          <NavLink className="secondary-button" to="/tienda">
+            Ver tienda
+          </NavLink>
+        ) : null}
+      </div>
+
+      {status === 'loading' ? <CatalogState type="loading" /> : null}
+      {status === 'error' ? <CatalogState type="error" message={errorMessage} /> : null}
+      {status === 'success' && products.length === 0 ? <CatalogState type="empty" /> : null}
+      {status === 'success' && products.length > 0 ? (
+        <div className="product-grid">
+          {products.map((product) => (
+            <ProductCard
+              product={product}
+              quantity={cartItems[product.id]?.quantity || 0}
+              onAdd={onAddToCart}
+              key={product.id}
+            />
+          ))}
+        </div>
+      ) : null}
+    </section>
+  )
+}
+
+function ProductCard({ product, quantity, onAdd }) {
+  return (
+    <article className={product.available ? 'product-card' : 'product-card is-sold-out'}>
+      <div className={product.imageUrl ? 'product-media has-image' : 'product-media'}>
+        {product.imageUrl ? (
+          <img className="product-backdrop" src={product.imageUrl} alt="" aria-hidden="true" />
+        ) : null}
+        <div className="product-image-frame">
+          {product.imageUrl ? (
+            <img src={product.imageUrl} alt={product.name} loading="lazy" />
+          ) : (
+            <span>
+              <ShoppingBag size={34} />
+            </span>
+          )}
+        </div>
+        <strong className={product.available ? 'availability-badge' : 'availability-badge is-muted'}>
+          {product.available ? 'Disponible' : 'Agotado'}
+        </strong>
+      </div>
+      <div className="product-body">
+        <h3>{product.name}</h3>
+        <p>{product.description || 'Producto veterinario disponible en tienda.'}</p>
+        <div className="product-meta">
+          <strong>{currencyFormatter.format(Number(product.price || 0))}</strong>
+          <span>En tienda</span>
+        </div>
+        <button
+          className="cart-add-button"
+          type="button"
+          disabled={!product.available}
+          onClick={() => onAdd(product)}
+        >
+          <ShoppingBag size={18} />
+          {product.available ? (quantity > 0 ? `Agregar otro (${quantity})` : 'Agregar al carrito') : 'Agotado'}
+        </button>
+      </div>
+    </article>
+  )
+}
+
+function CartSummary({ cartSummary, isOpen, onClose, onAdd, onReduce, onRemove }) {
+  const { items, itemCount, subtotal } = cartSummary
+  if (!isOpen) return null
+
+  return (
+    <div className="cart-drawer is-open">
+      <button className="cart-drawer-backdrop" type="button" aria-label="Cerrar carrito" onClick={onClose} />
+      <aside className="cart-panel" aria-label="Carrito simulado">
+        <div className="cart-panel-heading">
+          <span>
+            <ShoppingBag size={22} />
+          </span>
+          <div>
+            <strong>Carrito</strong>
+            <p>{itemCount === 1 ? '1 producto agregado' : `${itemCount} productos agregados`}</p>
+          </div>
+          <button className="cart-close-button" type="button" aria-label="Cerrar carrito" onClick={onClose}>
+            <X size={20} />
+          </button>
+        </div>
+
+        {items.length === 0 ? (
+          <div className="cart-empty">
+            <PackageOpen size={30} />
+            <p>Agrega productos para simular tu pedido.</p>
+          </div>
+        ) : (
+          <div className="cart-items">
+            {items.map(({ product, quantity }) => (
+              <div className="cart-item" key={product.id}>
+                <div>
+                  <strong>{product.name}</strong>
+                  <span>{currencyFormatter.format(Number(product.price || 0))}</span>
+                </div>
+                <div className="cart-item-actions">
+                  <button type="button" aria-label={`Quitar una unidad de ${product.name}`} onClick={() => onReduce(product.id)}>
+                    <Minus size={15} />
+                  </button>
+                  <span>{quantity}</span>
+                  <button type="button" aria-label={`Agregar una unidad de ${product.name}`} onClick={() => onAdd(product)}>
+                    <Plus size={15} />
+                  </button>
+                  <button type="button" aria-label={`Retirar ${product.name}`} onClick={() => onRemove(product.id)}>
+                    <Trash2 size={15} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="cart-total">
+          <span>Total estimado</span>
+          <strong>{currencyFormatter.format(subtotal)}</strong>
+        </div>
+        <button className="cart-continue-button" type="button">
+          Continuar
+        </button>
+        <p className="cart-note">Simulación visual. Este botón no procesa compras ni envía pedidos.</p>
+      </aside>
+    </div>
+  )
+}
+
+function CatalogState({ type, message }) {
+  const stateContent = {
+    loading: {
+      icon: ShoppingBag,
+      title: 'Cargando productos',
+      text: 'Estamos consultando el catálogo público de Supabase.',
+    },
+    error: {
+      icon: PackageOpen,
+      title: 'No pudimos cargar la tienda',
+      text: message || 'Revisa las variables de entorno y las policies públicas de Supabase.',
+    },
+    empty: {
+      icon: PackageOpen,
+      title: 'Aún no hay productos visibles',
+      text: 'Cuando existan productos activos para esta tienda, aparecerán aquí automáticamente.',
+    },
+  }
+  const content = stateContent[type]
+  const Icon = content.icon
+
+  return (
+    <div className="catalog-state" role={type === 'error' ? 'alert' : 'status'}>
+      <span>
+        <Icon size={28} />
+      </span>
+      <h3>{content.title}</h3>
+      <p>{content.text}</p>
+    </div>
   )
 }
 
@@ -800,6 +1102,21 @@ function ServicesPage() {
   )
 }
 
+function ShopPage({ cartItems, onAddToCart }) {
+  return (
+    <>
+      <PageHero
+        eyebrow="Tienda"
+        title="Catálogo Enro's Vet"
+        text="Productos activos de la veterinaria, leídos de forma pública desde Supabase con permisos de solo lectura."
+        image="https://images.unsplash.com/photo-1589924691995-400dc9ecc119?auto=format&fit=crop&w=1800&q=82"
+      />
+      <ProductCatalog cartItems={cartItems} onAddToCart={onAddToCart} showAction={false} />
+      <CtaSection />
+    </>
+  )
+}
+
 function AboutPage() {
   return (
     <>
@@ -950,6 +1267,7 @@ function Footer() {
       <div className="footer-links">
         <nav>
           <NavLink to="/servicios">Servicios</NavLink>
+          <NavLink to="/tienda">Tienda</NavLink>
           <NavLink to="/contacto">Contacto</NavLink>
         </nav>
         <SocialLinks />
