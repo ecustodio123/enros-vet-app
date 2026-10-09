@@ -4,7 +4,7 @@ import { getProductImageUrl } from './productImages'
 
 export async function getPublicProducts() {
   if (!supabase) {
-    throw new Error('Supabase no está configurado. Define VITE_SUPABASE_URL y VITE_SUPABASE_PUBLISHABLE_KEY.')
+    throw new Error('Supabase no está configurado. Define VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY.')
   }
 
   const { data, error } = await supabase

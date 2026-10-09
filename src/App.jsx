@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
+import { CommerceStore } from '@ecustodio123/kafka-commerce'
+import '@ecustodio123/kafka-commerce/styles.css'
 import {
   Activity,
   ArrowLeft,
@@ -41,9 +43,11 @@ import petShop from './assets/img/services/petShop.jpg'
 import microchip from './assets/img/services/microchip.jpg'
 import ecografia2 from './assets/img/services/ecografia2.jpg'
 import { getPublicProducts } from './services/products'
+import { isSupabaseConfigured, supabase } from './lib/supabase'
 import './App.css'
 
 const whatsappNumber = '51999976216'
+const commerceWhatsappPhone = import.meta.env.VITE_WHATSAPP_PHONE || whatsappNumber
 const phoneDisplay = '+51 999976216'
 const businessHours = 'Lun-Sáb 9:00 AM - 8:00 PM'
 const whatsappMessage = "Hola Enro's Vet, quisiera agendar una atención para mi mascota."
@@ -319,6 +323,18 @@ const currencyFormatter = new Intl.NumberFormat('es-PE', {
   currency: 'PEN',
 })
 
+const kafkaCommerceTheme = {
+  primary: '#f00000',
+  primaryText: '#ffffff',
+  background: '#ffffff',
+  surface: '#fbfaf8',
+  text: '#171717',
+  mutedText: '#6c6c6c',
+  border: '#ece7df',
+  radius: '8px',
+  fontFamily: 'inherit',
+}
+
 function App() {
   const [cartItems, setCartItems] = useState({})
   const [cartOpen, setCartOpen] = useState(false)
@@ -395,6 +411,7 @@ function App() {
               path="/tienda"
               element={<ShopPage cartItems={cartItems} onAddToCart={addToCart} />}
             />
+            <Route path="/tiendas-prueba" element={<TiendasPruebaPage />} />
             <Route path="/nosotros" element={<AboutPage />} />
             <Route path="/contacto" element={<ContactPage />} />
           </Routes>
@@ -464,6 +481,7 @@ function Header({ cartCount, onCartOpen }) {
         <NavLink to="/">Inicio</NavLink>
         <NavLink to="/servicios">Servicios</NavLink>
         <NavLink to="/tienda">Tienda</NavLink>
+        <NavLink to="/tiendas-prueba">Prueba</NavLink>
         <NavLink to="/nosotros">Nosotros</NavLink>
         <NavLink to="/contacto">Contacto</NavLink>
         <a className="nav-cta" href={whatsappUrl} target="_blank" rel="noreferrer">
@@ -1117,6 +1135,50 @@ function ShopPage({ cartItems, onAddToCart }) {
   )
 }
 
+function TiendasPruebaPage() {
+  const storeId = import.meta.env.VITE_STORE_ID
+
+  return (
+    <>
+      <PageHero
+        eyebrow="Kafka Commerce"
+        title="Tiendas prueba"
+        text="Ruta aislada para validar la tienda completa de Kafka Commerce leyendo productos activos desde Supabase."
+        image="https://images.unsplash.com/photo-1604719312566-8912e9227c6a?auto=format&fit=crop&w=1800&q=82"
+      />
+      <section className="section-wrap kafka-commerce-section">
+        {!isSupabaseConfigured || !storeId ? (
+          <div className="catalog-state" role="alert">
+            <span>
+              <PackageOpen size={28} />
+            </span>
+            <h3>Falta configuración</h3>
+            <p>Define VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY y VITE_STORE_ID para cargar esta prueba.</p>
+          </div>
+        ) : (
+          <CommerceStore
+            checkout={{
+              type: 'whatsapp',
+              phone: commerceWhatsappPhone,
+            }}
+            description="Explora nuestros productos y prepara tu pedido por WhatsApp."
+            features={{
+              search: true,
+              filters: true,
+              cart: true,
+            }}
+            productImageBucket="product-images"
+            storeId={storeId}
+            supabase={supabase}
+            theme={kafkaCommerceTheme}
+            title="Tienda"
+          />
+        )}
+      </section>
+    </>
+  )
+}
+
 function AboutPage() {
   return (
     <>
@@ -1268,6 +1330,7 @@ function Footer() {
         <nav>
           <NavLink to="/servicios">Servicios</NavLink>
           <NavLink to="/tienda">Tienda</NavLink>
+          <NavLink to="/tiendas-prueba">Prueba</NavLink>
           <NavLink to="/contacto">Contacto</NavLink>
         </nav>
         <SocialLinks />

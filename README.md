@@ -8,10 +8,13 @@ Crear un archivo `.env` local basado en `.env.example`:
 
 ```bash
 VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
 VITE_SUPABASE_PUBLISHABLE_KEY=
+VITE_STORE_ID=
+VITE_WHATSAPP_PHONE=
 ```
 
-No usar `service_role`, contraseña de base de datos ni secretos privados en este frontend. La app solo debe utilizar la publishable key de Supabase.
+No usar `service_role`, contraseña de base de datos ni secretos privados en este frontend. La app solo debe utilizar la anon/publishable key pública de Supabase.
 
 ## Ejecutar el proyecto
 
@@ -64,9 +67,51 @@ supabase.storage.from('product-images').getPublicUrl(imagePath)
 
 El frontend solo lee imágenes. No sube, edita ni elimina archivos.
 
+## Kafka Commerce
+
+La ruta `/tiendas-prueba` renderiza `@ecustodio123/kafka-commerce@0.1.0`, instalado desde GitHub Packages.
+
+Esa vista usa:
+
+- `CommerceStore`
+- `@ecustodio123/kafka-commerce/styles.css`
+- el cliente compartido de `src/lib/supabase.js`
+- `VITE_STORE_ID` como tienda de prueba
+- `VITE_WHATSAPP_PHONE` para checkout por WhatsApp
+
+Kafka Commerce filtra productos por `store_id`, muestra solo `active = true`, habilita búsqueda/filtros/carrito y prepara checkout por WhatsApp desde el frontend público.
+
+Para instalar dependencias privadas desde GitHub Packages, el entorno debe tener:
+
+```bash
+GITHUB_PACKAGES_TOKEN=token_con_read_packages
+```
+
+El token no debe guardarse en `.env` de Vite ni exponerse como variable `VITE_*`.
+
+El theme de Kafka Commerce se configuró con la identidad visual actual del proyecto:
+
+- rojo principal `#f00000`
+- naranja de apoyo `#f09010`
+- fondo blanco y superficie suave `#fbfaf8`
+- texto `#171717`
+- borde cálido `#ece7df`
+- radio `8px`
+- tipografía heredada del sitio
+
 ## Seguridad y RLS
 
 Este proyecto actúa como usuario `anon`. Supabase debe permitir lectura pública de productos visibles, por ejemplo productos con `active = true`, y lectura pública del bucket `product-images`.
+
+Política orientativa de solo lectura para productos activos:
+
+```sql
+create policy "Public active products are readable"
+on public.products
+for select
+to anon
+using (active = true);
+```
 
 Este repositorio no implementa:
 

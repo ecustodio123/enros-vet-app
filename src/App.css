@@ -1010,6 +1010,55 @@
   margin-top: 10px;
 }
 
+.kafka-commerce-section .kc-commerce-store {
+  background:
+    linear-gradient(135deg, rgba(255, 242, 223, 0.48), rgba(255, 255, 255, 0.96)),
+    var(--surface-soft);
+  box-shadow: var(--shadow);
+}
+
+.kafka-commerce-section .kc-commerce-store__header {
+  background:
+    linear-gradient(135deg, rgba(255, 242, 223, 0.92), rgba(255, 255, 255, 0.98)),
+    var(--surface);
+  padding: clamp(24px, 4vw, 38px);
+}
+
+.kafka-commerce-section .kc-commerce-store__eyebrow {
+  letter-spacing: 0.1em;
+}
+
+.kafka-commerce-section .kc-commerce-store__title {
+  font-weight: 900;
+}
+
+.kafka-commerce-section .kc-commerce-store__toolbar,
+.kafka-commerce-section .kc-commerce-store__layout {
+  padding: clamp(18px, 3vw, 28px);
+}
+
+.kafka-commerce-section .kc-commerce-store__search input,
+.kafka-commerce-section .kc-commerce-store__sidebar,
+.kafka-commerce-section .kc-product-card {
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.kafka-commerce-section .kc-product-card:hover {
+  box-shadow: 0 22px 58px rgba(28, 24, 20, 0.12);
+  transform: translateY(-4px);
+}
+
+.kafka-commerce-section .kc-product-card__media {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(240, 144, 16, 0.2), transparent 32%),
+    linear-gradient(135deg, rgba(255, 242, 223, 0.96), rgba(255, 255, 255, 0.98));
+}
+
+.kafka-commerce-section .kc-product-card__status--available {
+  background: var(--orange-soft);
+  color: #9a5600;
+}
+
 .trust-band {
   display: grid;
   grid-template-columns: 1.2fr 1fr;
